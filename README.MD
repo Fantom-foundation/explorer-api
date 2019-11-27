@@ -1,6 +1,8 @@
 Fantom blockchain explorer
 =====================
 
+Fork from Ethereumclassic explorer
+
 Add variables from ```example.env``` to ```.env``` file   
 Check files in 'config' folder   
 
