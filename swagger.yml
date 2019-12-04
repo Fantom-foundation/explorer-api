@@ -1,0 +1,464 @@
+openapi: 3.0.1
+info:
+  title: Fantom explorer api
+  description: Work in progress
+  version: '0.1'
+servers:
+  - url: 'http://18.222.120.223:3100'
+paths:
+  /api/v1/get-blocks:
+    get:
+      description: Returns blocks list with pagination. Max count = 30, order may be -1 or 1.
+      parameters:
+        - name: offset
+          in: query
+          schema:
+            type: integer
+          example: 0
+        - name: count
+          in: query
+          schema:
+            type: integer
+          example: 1
+        - name: order
+          in: query
+          schema:
+            type: integer
+          example: -1
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json; charset=utf-8:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/meta'
+                  data:
+                    type: object
+                    properties:
+                      maxBlockHeight:
+                        type: integer
+                      total:
+                        type: integer
+                        description: total number of blocks in database by provided (or not) conditions
+                      offset:
+                        type: integer
+                        description: offset of pagination
+                      count:
+                        type: integer
+                        description: number of blocks per page
+                      blocks:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Block'
+      servers:
+        - url: 'http://18.222.120.223:3100'
+      tags:
+        - block
+      summary: Blocks list
+    servers:
+      - url: 'http://18.222.120.223:3100'
+  /api/v1/get-transaction:
+    get:
+      description: Get transaction by hash
+      parameters:
+        - name: transactionHash
+          in: query
+          schema:
+            type: string
+          required: true
+          example: '0x39fdeb521dac118ec3f9605461647b02993268b00cbb7281d2dbf7a71edba93a'
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json; charset=utf-8:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/meta'
+                  data:
+                    type: object
+                    properties:
+                      transaction:
+                        $ref: '#/components/schemas/Transaction'
+      servers:
+        - url: 'http://18.222.120.223:3100'
+      tags:
+        - transaction
+      summary: Get transaction by hash
+    servers:
+      - url: 'http://18.222.120.223:3100'
+  /api/v1/get-block:
+    servers:
+      - url: 'http://18.222.120.223:3100'
+    get:
+      summary: Get block by block number
+      tags:
+        - block
+      description: Returns block with provided number
+      parameters:
+        - name: blockNumber
+          in: query
+          schema:
+            type: number
+          required: true
+          example: 5
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json; charset=utf-8:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/meta'
+                  data:
+                    type: object
+                    properties:
+                      block:
+                        $ref: '#/components/schemas/Block'
+      servers:
+        - url: 'http://18.222.120.223:3100'
+  /api/v1/get-account:
+    get:
+      description: Returns account with transactions array in it with pagination.  You may filter transactions by query field 'trxsFilter' with values 'from' or 'to'. Without values filter not applied to result.
+      parameters:
+        - name: address
+          in: query
+          schema:
+            type: string
+          required: true
+          example: '0x239fa7623354ec26520de878b52f13fe84b06971'
+        - name: offset
+          in: query
+          schema:
+            type: integer
+          example: 0
+        - name: count
+          in: query
+          schema:
+            type: integer
+          example: 1
+        - name: trxsFilter
+          in: query
+          schema:
+            type: string
+          example: to
+          description: from or to
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json; charset=utf-8:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/meta'
+                  data:
+                    type: object
+                    properties:
+                      account:
+                        type: object
+                        properties:
+                          address:
+                            type: string
+                          balance:
+                            type: number
+                          nonce:
+                            type: integer
+                          totalTrxs:
+                            type: integer
+                          offsetTrxs:
+                            type: integer
+                          countTrxs:
+                            type: integer
+                          transactions:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/TransactionForAccountEndpoint'
+      servers:
+        - url: 'http://18.222.120.223:3100'
+      summary: Get account by address
+      tags:
+        - account
+    servers:
+      - url: 'http://18.222.120.223:3100'
+  /api/v1/get-transactions:
+    get:
+      description: Returns transactions list with pagination. Max count = 30, order may be -1 or 1.
+      parameters:
+        - name: offset
+          in: query
+          schema:
+            type: integer
+          example: 0
+        - name: count
+          in: query
+          schema:
+            type: integer
+          example: 1
+        - name: order
+          in: query
+          schema:
+            type: integer
+          example: -1
+        - name: block
+          in: query
+          schema:
+            type: integer
+          example: 162
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json; charset=utf-8:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/meta'
+                  data:
+                    type: object
+                    properties:
+                      maxBlockHeight:
+                        type: integer
+                      total:
+                        type: integer
+                        description: total number of transactions in database by provided (or not) conditions
+                      offset:
+                        type: integer
+                        description: offset of pagination
+                      count:
+                        type: integer
+                        description: number of transactions per page
+                      transactions:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Transaction'
+      servers:
+        - url: 'http://18.222.120.223:3100'
+      summary: Transactions list
+      tags:
+        - transaction
+    servers:
+      - url: 'http://18.222.120.223:3100'
+  /api/v1/get-latest-data:
+    get:
+      description: Returns latest blocks and transactions with pagination. Max count = 30.
+      parameters:
+        - name: count
+          in: query
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json; charset=utf-8:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/meta'
+                  data:
+                    type: object
+                    properties:
+                      maxBlockHeight:
+                        type: integer
+                      count:
+                        type: integer
+                        description: number of blocks and transactions per page
+                      blocks:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Block'
+                      transactions:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Transaction'
+      servers:
+        - url: 'http://18.222.120.223:3100'
+      summary: Get latest data
+      tags:
+        - latest data
+    servers:
+      - url: 'http://18.222.120.223:3100'
+      
+components:
+  schemas:
+    meta:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: is operation successful
+      required:
+        - success
+    Block:
+      type: object
+      properties:
+        uncles:
+          type: array
+          items: 
+            type: string
+          description: Array of uncle hashes
+        difficulty: 
+          type: string
+          description: Integer of the difficulty for this block.
+        extraData:
+          type: string
+          description: The “extra data” field of this block.
+        gasLimit:
+          type: integer
+          description: The maximum gas allowed in this block.
+        gasUsed:
+          type: integer
+          description: The total used gas by all transactions in this block.
+        hash:
+          type: string
+          description: Hash of the block.
+        logsBloom:
+          type: string
+          description: The bloom filter for the logs of the block.
+        miner:
+          type: string
+          description: The address of the beneficiary to whom the mining rewards were given.
+        nonce:
+          type: string
+          description: Hash of the generated proof-of-work.
+        number:
+          type: integer
+          description: The block number.
+        parentHash:
+          type: string
+          description: Hash of the parent block.
+        sha3Uncles:
+          type: string
+          description: SHA3 of the uncles data in the block.
+        size:
+          type: integer
+          description: Integer the size of this block in bytes.
+        stateRoot:
+          type: string
+          description: The root of the final state trie of the block.
+        timestamp:
+          type: integer
+          description: The unix timestamp for when the block was collated.
+        totalDifficulty:
+          type: string
+          description: Integer of the total difficulty of the chain until this block.
+        transactions:
+          type: integer
+          description: number of transactions in block
+        transactionsRoot:
+          type: string
+          description: The root of the transaction trie of the block
+    Transaction:
+      type: object
+      properties:
+        blockHash:
+          type: string
+        blockNumber:
+          type: integer
+        from:
+          type: string
+        hash:
+          type: string
+        value:
+          type: string
+        nonce:
+          type: integer
+        r:
+          type: string
+        s:
+          type: string
+        v:
+          type: string
+        gas:
+          type: integer
+        gasUsed:
+          type: integer
+        gasPrice:
+          type: string
+        input:
+          type: string
+        transactionIndex:
+          type: integer
+        timestamp:
+          type: integer
+        cumulativeGasUsed:
+          type: integer
+        logs:
+          type: array
+          items: 
+            type: object
+        fee:
+          type: integer
+        status:
+          type: boolean
+        to:
+          type: string
+        contractAddress:
+          type: string
+    TransactionForAccountEndpoint:
+      type: object
+      properties:
+        from:
+          type: string
+        hash:
+          type: string
+        value:
+          type: string
+        nonce:
+          type: integer
+        gasUsed:
+          type: integer
+        gasPrice:
+          type: string
+        timestamp:
+          type: integer
+        fee:
+          type: integer
+        to:
+          type: string
+        contractAddress:
+          type: string
+    Response with validation error:
+      type: object
+      properties:
+        meta:
+          type: object
+          properties:
+            code:
+              type: integer
+            success:
+              type: boolean
+            message:
+              type: string
+        data:
+          type: object
+          properties:
+            additional:
+              type: array
+              items: 
+                $ref: '#/components/schemas/ValidationErrorAdditionalObject'
+    ValidationErrorAdditionalObject:
+      type: object
+      properties:
+        value:
+          type: string
+        msg:
+          type: string
+        param:
+          type: string
+        location:
+          type: string
+          
+          
