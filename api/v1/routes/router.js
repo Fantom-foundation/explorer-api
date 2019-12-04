@@ -14,6 +14,7 @@ const getTransaction = require('../controllers/transaction/get.js');
 const getTransactions = require('../controllers/transaction/list.js');
 
 const getAccount = require('../controllers/account/get.js');
+const getAccounts = require('../controllers/account/list.js');
 
 const getLatestData = require('../controllers/get-latest-data.js');
 
@@ -35,6 +36,7 @@ router.get('/get-transaction', validTrx.get(), getTransaction);
 router.get('/get-transactions', validTrx.list(), getTransactions);
 
 router.get('/get-account', validAccount.get(), getAccount);
+router.get('/get-accounts', validAccount.list(), getAccounts);
 
 router.get('/get-latest-data', validLatestData.get(), getLatestData);
 
