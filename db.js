@@ -73,7 +73,10 @@ const Transaction = new Schema(
     'gasPrice': String,
     'timestamp': Number,
     'input': String,
-    'cumulativeGasUsed': Number
+    'cumulativeGasUsed': Number,
+    'contractAddress': String,
+    'logs': [],
+    'fee': String
   }, { collection: 'Transaction' },
 );
 

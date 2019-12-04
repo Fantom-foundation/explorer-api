@@ -48,11 +48,17 @@ const normalizeTX = async (txData, receipt, blockData) => {
     input: txData.input,
     transactionIndex: txData.transactionIndex,
     timestamp: blockData.timestamp,
-    cumulativeGasUsed: receipt.cumulativeGasUsed
+    cumulativeGasUsed: receipt.cumulativeGasUsed,
+    logs: receipt.logs,
+    fee: String(receipt.gasUsed * txData.gasPrice)
   };
 
   if (receipt.status) {
     tx.status = receipt.status;
+  }
+
+  if (receipt.contractAddress) {
+    tx.contractAddress = receipt.contractAddress;
   }
 
   if (txData.to) {
@@ -579,8 +585,6 @@ setInterval(
        * Should be true
        */
       const blockData = await web3.eth.getBlock(blockNumber, true);
-
-      console.log(`Block number: ${blockNumber}, trxs: ${blockData.transactions.length}`);
 
       writeBlockToDB(config, blockData, true);
       writeTransactionsToDB(config, blockData, true);
