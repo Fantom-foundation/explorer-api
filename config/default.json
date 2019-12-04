@@ -16,5 +16,8 @@
     "languages": {
         "ru": "Русский",
         "en": "English"
+    },
+    "validation": {
+        "maxCount": 30
     }
 }
