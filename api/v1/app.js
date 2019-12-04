@@ -30,13 +30,17 @@ app.use(function(err, req, res, next) {
   const message = err.message || errors.internalServerError.message;
   const additional = err.additional;
 
-  const errorInfo = { 
-    code,
-    success: false, 
-    error: message, 
-    additional
+  const errorInfo = {
+    meta: {
+      code,
+      success: false,
+      message,
+    },
+    data: {
+      additional
+    }
   };
-
+  
   res.status(code).send(errorInfo);
 
 });
