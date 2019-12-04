@@ -2,7 +2,7 @@ const IO = require("socket.io");
 const wsErrors = require("../../../mixins/websocketErrors");
 const { Block } = require('../../../db.js');
 
-const port = process.env.SOCKETIO_PORT || 3001;
+const port = process.env.SOCKETIOSERVER_PORT || 4600;
 const ioServer = IO.listen(port);
 
 ///////////////

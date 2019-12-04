@@ -7,7 +7,7 @@ var debug = require('debug')('fantomexplorer:server');
 var http = require('http');
 
 // Get port from environment and store in Express.
-var port = normalizePort(process.env.PORT || '3000');
+var port = normalizePort(process.env.API_PORT || '3000');
 app.set('port', port);
 
 // Create HTTP server.
