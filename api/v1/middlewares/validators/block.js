@@ -3,6 +3,8 @@ const errors = require('../../../../mixins/errors');
 const brI18n = require('../../../../mixins/badRequestI18n');
 const { Block } = require('../../../../db.js');
 
+const maxCount = require('config').get(`validation.maxCount`);
+
 module.exports.get = (req, res, next) => [
   query('blockNumber')
     .exists().bail().withMessage(`required`)
@@ -43,7 +45,7 @@ module.exports.list = (req, res, next) => [
     .optional()
     .isInt().bail().withMessage('shouldBeNumber')
     .isInt({ min: 1 }).bail().withMessage('greaterThanZero')
-    .isInt({ max: 20 }).bail().withMessage('tooLargeNumber')
+    .isInt({ max: maxCount }).bail().withMessage('tooLargeNumber')
     .toInt(),
   //
   query('order')

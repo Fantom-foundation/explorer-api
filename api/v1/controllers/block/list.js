@@ -10,13 +10,27 @@ module.exports = async (req, res, next) => {
     if (!count) count = 10;
     if (!order) order = -1;
 
-    const total = await Block.countDocuments();
-    const docs = await Block.find().select('-_id').sort({ number: order }).skip(offset).limit(count);
+    let lastBlock, maxBlockHeight, total, blocks;
+
+    await Promise.all([
+      Block.findOne().select('number').sort('-number'),
+      Block.countDocuments(),
+      Block.find().select('-_id').sort({ number: order }).skip(offset).limit(count)
+    ])
+    .then(result => {
+      lastBlock = result[0];
+      total = result[1];
+      blocks = result[2];
+    });
+    
+    if (lastBlock) maxBlockHeight = lastBlock.number;
+    
     const data = { 
+      maxBlockHeight,
       total, 
       offset, 
       count, 
-      docs 
+      blocks 
     }
 
     return res.json(okResp(data));
