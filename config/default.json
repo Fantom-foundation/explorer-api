@@ -3,7 +3,7 @@
     "wsPort":       7771,
     "startBlock":   0,
     "endBlock":     "latest",
-    "quiet":        true,
+    "quiet":        false,
     "syncAll":      true,
     "patch":        true,
     "patchBlocks":  100,
