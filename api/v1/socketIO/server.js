@@ -1,6 +1,6 @@
 const IO = require("socket.io");
 const wsErrors = require("../../../mixins/websocketErrors");
-const { Block } = require('../../../db.js');
+const { Block, Transaction } = require('../../../db.js');
 
 const port = process.env.SOCKETIOSERVER_PORT || 4600;
 const ioServer = IO.listen(port);
@@ -86,9 +86,7 @@ const namespacesUrls = [
     `/new/blocks`
 ];
 
-namespacesUrls.forEach(nsp => {
-    addNsp(`/new/blocks`);
-});
+namespacesUrls.forEach(nspUrl => addNsp(nspUrl));
 
 //////////
 // Jobs //
@@ -108,6 +106,11 @@ setInterval(
                 return;
             }
 
+            const lastTrxs = await Transaction.find({ blockNumber: newBlock.number })
+                                              .select('-_id hash from to value transactionIndex')
+                                              .sort(`-transactionIndex`)
+                                              .limit(10);
+
             console.log(`New block: ${newBlock.number}`);
 
             prevBlock = newBlock.number;
@@ -115,7 +118,7 @@ setInterval(
             const nsp = ioServer.nsps[`/new/blocks`];
 
             if (nsp && nsp.adapter.rooms[`subscribedClients`]){
-                const payload = JSON.stringify({ event: `newBlock`, block: newBlock });
+                const payload = JSON.stringify({ event: `newBlock`, block: newBlock, lastTrxs });
                 nsp.to(`subscribedClients`).emit(`message`, payload);
                 console.log(`Sent to ${nsp.adapter.rooms[`subscribedClients`].length} clients`);
             }
