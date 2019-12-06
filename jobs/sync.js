@@ -565,6 +565,8 @@ setInterval(
   async () => {
     try {
       const blockNumber = await web3.eth.getBlockNumber();
+      const missingBlocks = [];
+      let tempBlockNumStorage;
 
       if (!blockNumber && blockNumber !== 0) {
         console.log('Warning! Something wrong with receiving block number:', blockNumber);
@@ -572,13 +574,37 @@ setInterval(
       }
 
       const isNotNew = await Block.findOne({ number: blockNumber });
+      const lastBlockInDB = await Block.findOne().select('number').sort('-number');
 
       if (isNotNew) {
         return;
       }
 
       /**
-       * Second argument:
+       * check if there is missing blocks between new block and last one in DB
+       * then fetch missing blocks                  
+       */
+      
+      if (lastBlockInDB && (blockNumber - lastBlockInDB.number) > 1) {
+        tempBlockNumStorage = lastBlockInDB.number;
+
+        while ((blockNumber - tempBlockNumStorage) > 1){
+          tempBlockNumStorage++;
+          missingBlocks.push(tempBlockNumStorage);
+        }
+
+        missingBlocks.forEach(blockNumber=>{
+          fetchCertainBlockAndWriteToDB(blockNumber);
+        })
+
+        console.log(`new block: ${blockNumber}, last block in DB: ${lastBlockInDB.number}`);
+        console.log(`missing blocks: ${missingBlocks}`);
+      }
+      ///////////////////////////////////////////////////////////////////////////
+
+      /**
+       * Fetch new block
+       * 
        * If true, the returned block will contain all transactions as objects
        * if false it will only contains the transaction hashes.
        * 
@@ -592,5 +618,20 @@ setInterval(
       console.log(err);
     }
   },
-  250,
+  1000,
 );
+
+async function fetchCertainBlockAndWriteToDB(blockNumber){
+  const blockAlreadyExists = await Block.findOne({ number: blockNumber });
+
+  if (blockAlreadyExists){
+    if (!config.has('quiet') || config.get('quiet') == false) {
+      console.log(`Block number: ${blockNumber.toString()} already exists in DB.`);
+    }
+    return;
+  }
+
+  const blockData = await web3.eth.getBlock(blockNumber, true);
+  writeBlockToDB(config, blockData, true);
+  writeTransactionsToDB(config, blockData, true);
+}
