@@ -5,7 +5,7 @@
     "endBlock":     "latest",
     "quiet":        false,
     "syncAll":      true,
-    "patch":        true,
+    "patch":        false,
     "patchBlocks":  100,
     "bulkSize":     100,
     "settings": {
