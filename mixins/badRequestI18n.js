@@ -4,6 +4,7 @@ const i18n = {
   ru: {
     "required": "Обязательно",
     "shouldBeNumber": "Тип должен быть Number",
+    "shouldBeBoolean": "Тип должен быть Boolean",
     "positive": "Должен быть больше 0",
     "tooLargeNumber": "Слишком большое число",
     "notFound": "Не найдено",
@@ -12,11 +13,15 @@ const i18n = {
     "shouldBeString": "Должно быть строкой",
     "greaterThanZero": "Должно быть больше 0",
     "stringLength42": "Количество символов в строке должно быть 42",
-    "stringLength66": "Количество символов в строке должно быть 66"
+    "stringLength66": "Количество символов в строке должно быть 66",
+    "someFilterParamsAreNotAcceptable": "Некоторые параметры фильтра недопустимы",
+    "unnacceptableLength": "Недопустимая длина",
+    "duplicatesNotAcceptable": "Дубликаты недопустимы"
   },
   en: {
     "required": "Required",
     "shouldBeNumber": "Should be Number",
+    "shouldBeBoolean": "Should be Boolean",
     "positive": "Should be positive",
     "tooLargeNumber": "Too large number",
     "notFound": "Not found",
@@ -25,7 +30,10 @@ const i18n = {
     "shouldBeString": "Should be String",
     "greaterThanZero": "Should be greater than zero",
     "stringLength42": "String length should be 42",
-    "stringLength66": "String length should be 66"
+    "stringLength66": "String length should be 66",
+    "someFilterParamsAreNotAcceptable": "Some filter parameters are not acceptable",
+    "unnacceptableLength": "Unacceptable length",
+    "duplicatesNotAcceptable": "Duplicates not acceptable"
   },
 };
 

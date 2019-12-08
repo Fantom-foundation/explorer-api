@@ -4,6 +4,12 @@ const brI18n = require('../../../../mixins/badRequestI18n');
 const { Account } = require('../../../../db.js');
 
 const maxCount = require('config').get(`validation.maxCount`);
+const acceptedFilterParams = [
+  'from',
+  'to',
+  'contract'
+]
+const trxsFilterMaxLength = acceptedFilterParams.join().length;
 
 module.exports.get = (req, res, next) => [
   query('address')
@@ -32,6 +38,32 @@ module.exports.get = (req, res, next) => [
     .isInt({ min: 1 }).bail().withMessage('greaterThanZero')
     .isInt({ max: maxCount }).bail().withMessage('tooLargeNumber')
     .toInt(),
+  //
+  query('trxsFilter')
+    .optional()
+    .isLength({ max: trxsFilterMaxLength }).bail().withMessage('unnacceptableLength')
+    .custom((trxsFilter, {req}) => {
+      const filterParamsarray = trxsFilter.split(`,`);
+
+      const duplicatesExists = new Set(filterParamsarray).size != filterParamsarray.length;
+      if (duplicatesExists){
+        return Promise.reject(`duplicatesNotAcceptable`);
+      }
+      
+      let allParamsAcceptable = true;
+      for (let param of filterParamsarray){
+        if (acceptedFilterParams.indexOf(param) === -1) {
+          allParamsAcceptable = false;
+          break;
+        }
+      }
+
+      if (allParamsAcceptable) {
+        req.query.trxsFilter = filterParamsarray;
+      }
+      
+      return allParamsAcceptable;
+    }).withMessage('someFilterParamsAreNotAcceptable'),
   //
 
   async (req, res, next) => {

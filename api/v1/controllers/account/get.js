@@ -12,15 +12,47 @@ module.exports = async (req, res, next) => {
     const account = { ...req.foundAccount };
     const addr = account.address;
 
-    let trxsQuery;
-    if (trxsFilter === 'from') trxsQuery = { from: addr };
-    else if (trxsFilter === 'to') trxsQuery = { to: addr };
-    else trxsQuery = { $or:[{ from: addr }, { to: addr }] };
+    /////////////////
+    // Build query //
+    /////////////////
+
+    let trxsQuery = {
+      $or: [],
+      contractAddress: null // transactions for contract creation not included in query by default
+    };
+
+    if (trxsFilter) {
+
+      // contractAddress is not null if the transaction was a contract creation
+      if (trxsFilter.indexOf('contract') != -1){
+        trxsQuery.contractAddress = { $ne: null };
+      }
+      
+      if (trxsFilter.indexOf('from') != -1){
+        trxsQuery.$or.push({ from: addr });
+      }
+
+      if (trxsFilter.indexOf('to') != -1){
+        trxsQuery.$or.push({ to: addr });
+      }
+
+    }
+    
+    if (
+      !trxsFilter || 
+      trxsFilter && trxsFilter.indexOf('from') == -1 && trxsFilter.indexOf('to') == -1
+    ){
+      trxsQuery.$or.push({ from: addr });
+      trxsQuery.$or.push({ to: addr });
+    }
+
+    /////////////////
 
     let totalTrxs, lastTrx, trxs;
     
     await Promise.all([
       Transaction.countDocuments(trxsQuery),
+      Transaction.findOne({ $or:[{ from: addr }] }).select('nonce').sort('-nonce'),
       Transaction.find(trxsQuery).select('-_id hash from to nonce timestamp value fee gasUsed gasPrice contractAddress').sort('-globalIndex').skip(offset).limit(count)
     ])
     .then(result => {
