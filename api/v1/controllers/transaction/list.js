@@ -4,7 +4,7 @@ const { Transaction, Block } = require('../../../../db.js');
 
 module.exports = async (req, res, next) => {
   try {          
-    let { offset, count, order, block } = req.query;
+    let { offset, count, order, block, from, to, contractCreation, contractAddress } = req.query;
 
     if (!offset) offset = 0;
     if (!count) count = 10;
@@ -13,6 +13,11 @@ module.exports = async (req, res, next) => {
     const query = {};
 
     if (block >= 0) query.blockNumber = block;
+    if (req.foundFrom) query.from = from;
+    if (req.foundTo) query.to = to;
+    if (typeof contractCreation === 'boolean' && contractCreation === true) query.contractAddress = { $ne: null };
+    if (typeof contractCreation === 'boolean' && contractCreation === false) query.contractAddress = null;
+    if (req.foundContract) query.contractAddress = contractAddress;
 
     let lastBlock, maxBlockHeight, total, transactions;
 

@@ -1,7 +1,7 @@
 const { query, validationResult } = require('express-validator');
 const errors = require('../../../../mixins/errors');
 const brI18n = require('../../../../mixins/badRequestI18n');
-const { Transaction } = require('../../../../db.js');
+const { Transaction, Account, Contract } = require('../../../../db.js');
 
 const maxCount = require('config').get(`validation.maxCount`);
 
@@ -58,6 +58,50 @@ module.exports.list = (req, res, next) => [
     .isInt({ min: 0 }).bail().withMessage('positive')
     .isInt({ max: 100000000000 }).bail().withMessage('tooLargeNumber')
     .toInt(),
+  //
+  query('from')
+    .optional()
+    .isString().bail().withMessage('shouldBeString')
+    .isLength({ min: 42, max: 42 }).bail().withMessage(`stringLength42`)
+    .custom((address, { req }) => Account.findOne({ address }, '-_id address').lean(true).then(account => {
+      if (!account) {
+        return Promise.reject();
+      }
+
+      req.foundFrom = account;
+    }))
+    .withMessage('notFound'),
+  //
+  query('to')
+    .optional()
+    .isString().bail().withMessage('shouldBeString')
+    .isLength({ min: 42, max: 42 }).bail().withMessage(`stringLength42`)
+    .custom((address, { req }) => Account.findOne({ address }, '-_id address').lean(true).then(account => {
+      if (!account) {
+        return Promise.reject();
+      }
+
+      req.foundTo = account;
+    }))
+    .withMessage('notFound'),
+  //
+  query('contractCreation')
+    .optional()
+    .isBoolean().withMessage('shouldBeBoolean')
+    .toBoolean(),
+  //
+  query('contractAddress')
+    .optional()
+    .isString().bail().withMessage('shouldBeString')
+    .isLength({ min: 42, max: 42 }).bail().withMessage(`stringLength42`)
+    .custom((address, { req }) => Contract.findOne({ address }, '-_id address').lean(true).then(contract => {
+      if (!contract) {
+        return Promise.reject();
+      }
+
+      req.foundContract = contract;
+    }))
+    .withMessage('notFound'),
   //
 
   async (req, res, next) => {
