@@ -12,8 +12,9 @@
     "sync-dev": "nodemon ./bin/sync.js",
     "stats-dev": "nodemon ./bin/stats.js",
     "io-dev": "nodemon ./bin/socketIOServer.js",
-    "io-client-dev": "nodemon ./bin/socketIOClient.js"
+    "io-client-dev": "nodemon ./bin/socketIOClient.js",
 
+    "test": "mocha"
   },
   "dependencies": {
     "async": "^3.1.0",
@@ -32,6 +33,9 @@
     "web3-explorer": "^1.0.4"
   },
   "devDependencies": {
+    "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
+    "mocha": "^6.2.2",
     "nodemon": "^2.0.0",
     "socket.io-client": "^2.3.0"
   },
