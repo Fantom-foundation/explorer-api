@@ -21,8 +21,7 @@ module.exports = async (req, res, next) => {
     
     await Promise.all([
       Transaction.countDocuments(trxsQuery),
-      Transaction.findOne({ $or:[{ from: addr }, { to: addr }] }).select('nonce').sort('-timestamp'),
-      Transaction.find(trxsQuery).select('-_id hash from to nonce timestamp value fee gasUsed gasPrice').sort('-timestamp').skip(offset).limit(count)
+      Transaction.find(trxsQuery).select('-_id hash from to nonce timestamp value fee gasUsed gasPrice contractAddress').sort('-globalIndex').skip(offset).limit(count)
     ])
     .then(result => {
       totalTrxs = result[0];

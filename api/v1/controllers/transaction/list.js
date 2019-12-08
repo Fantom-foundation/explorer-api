@@ -19,7 +19,7 @@ module.exports = async (req, res, next) => {
     await Promise.all([
       Block.findOne().select('number').sort('-number'),
       Transaction.countDocuments(query),
-      Transaction.find(query).select('-_id').sort({ timestamp: order }).skip(offset).limit(count)
+      Transaction.find(query).select('-_id').sort({ globalIndex: order }).skip(offset).limit(count)
     ])
     .then(result => {
       lastBlock = result[0];

@@ -76,7 +76,8 @@ const Transaction = new Schema(
     'cumulativeGasUsed': Number,
     'contractAddress': String,
     'logs': [],
-    'fee': String
+    'fee': String,
+    'globalIndex': Number
   }, { collection: 'Transaction' },
 );
 
@@ -119,6 +120,7 @@ const Market = new Schema(
 
 // create indices
 Transaction.index({ blockNumber: -1 });
+Transaction.index({ globalIndex: -1 });
 Transaction.index({ from: 1, blockNumber: -1 });
 Transaction.index({ to: 1, blockNumber: -1 });
 Transaction.index({ creates: 1, blockNumber: -1 });

@@ -50,7 +50,8 @@ const normalizeTX = async (txData, receipt, blockData) => {
     timestamp: blockData.timestamp,
     cumulativeGasUsed: receipt.cumulativeGasUsed,
     logs: receipt.logs,
-    fee: String(receipt.gasUsed * txData.gasPrice)
+    fee: String(receipt.gasUsed * txData.gasPrice),
+    globalIndex: txData.globalIndex
   };
 
   if (receipt.status) {
@@ -133,8 +134,18 @@ const writeTransactionsToDB = async (config, blockData, flush) => {
     self.miners.push({ address: blockData.miner, blockNumber: blockData.number, type: 0 });
   }
   if (blockData && blockData.transactions.length > 0) {
+
+    ////////////////////////////////////////////////////
+    // prepare to create global trx index for sorting //
+    ////////////////////////////////////////////////////
+    const trxsLength = blockData.transactions.length;
+    const exponent = trxsLength.toString().length;
+    const indexDivider = Math.pow(10,exponent);    
+    ////////////////////////////////////////////////////
+
     for (d in blockData.transactions) {
       const txData = blockData.transactions[d];
+      txData.globalIndex = blockData.number + (txData.transactionIndex / indexDivider);
       const receipt = await web3.eth.getTransactionReceipt(txData.hash);
       const tx = await normalizeTX(txData, receipt, blockData);
       // Contact creation tx, Event logs of internal transaction
