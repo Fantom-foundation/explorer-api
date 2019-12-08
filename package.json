@@ -11,7 +11,9 @@
     "api-dev": "nodemon ./bin/api",
     "sync-dev": "nodemon ./bin/sync.js",
     "stats-dev": "nodemon ./bin/stats.js",
-    "io-dev": "nodemon ./bin/socketIOServer.js"
+    "io-dev": "nodemon ./bin/socketIOServer.js",
+    "io-client-dev": "nodemon ./bin/socketIOClient.js"
+
   },
   "dependencies": {
     "async": "^3.1.0",
