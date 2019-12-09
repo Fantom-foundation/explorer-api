@@ -6,11 +6,12 @@
     "quiet":        false,
     "syncAll":      true,
     "patch":        false,
+    "getLatestBlocksInterval": 500,
     "patchBlocks":  100,
     "bulkSize":     100,
     "settings": {
         "useRichList": true,
-        "useFiat": true
+        "useFiat": false
     },
     "defaultLanguage": "en",
     "languages": {
