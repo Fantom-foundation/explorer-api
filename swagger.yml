@@ -138,18 +138,20 @@ paths:
           in: query
           schema:
             type: integer
-          example: 0
+          example: 10
+          description: default 0
         - name: count
           in: query
           schema:
             type: integer
-          example: 1
+          example: 10
+          description: default 10
         - name: trxsFilter
           in: query
           schema:
             type: string
-          example: to
-          description: from or to
+          example: from
+          description: Accept params "from", "to", "contract". Filter supports multiple parameters at the same time, but they can be mutually exclusive, for example "to" and "contract" - contract creation transaction's parameter "to" is always null.
       responses:
         '200':
           description: ok
@@ -213,6 +215,30 @@ paths:
           schema:
             type: integer
           example: 162
+        - name: from
+          in: query
+          schema:
+            type: string
+          example: "0x239fa7623354ec26520de878b52f13fe84b06971"
+          description: Add filter by sender address
+        - name: to
+          in: query
+          schema:
+            type: string
+          example: "0x239fa7623354ec26520de878b52f13fe84b06971"
+          description: Add filter by recipient address
+        - name: contractCreation
+          in: query
+          schema:
+            type: boolean
+          example: true
+          description: Exclude contract creation trxs or select only ctonract creation trxs. Omitting this parameter will cause including all types of trxs in selection.
+        - name: contractAddress
+          in: query
+          schema:
+            type: string
+          example: "0x1234567890123456789012345678901234567891"
+          description: Add filter by contract address
       responses:
         '200':
           description: ok
@@ -460,5 +486,3 @@ components:
           type: string
         location:
           type: string
-          
-          
