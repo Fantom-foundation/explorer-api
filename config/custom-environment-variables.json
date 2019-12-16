@@ -1,4 +1,5 @@
 {
+    "apiPort":      "F_NODE_API_PORT",
     "nodeAddr":     "F_NODE_ADDR",
     "wsPort":       "F_NODE_WS_PORT"
 }
