@@ -69,7 +69,7 @@ paths:
           schema:
             type: string
           required: true
-          example: '0x39fdeb521dac118ec3f9605461647b02993268b00cbb7281d2dbf7a71edba93a'
+          example: '0x506a50cd7ecf27c3834a045d5e7501bc3bfb56b6bae03637c093c6c8d9735b8e'
       responses:
         '200':
           description: ok
@@ -214,7 +214,7 @@ paths:
           in: query
           schema:
             type: integer
-          example: 162
+          example: 15232
         - name: from
           in: query
           schema:
@@ -231,7 +231,7 @@ paths:
           in: query
           schema:
             type: boolean
-          example: true
+          example: false
           description: Exclude contract creation trxs or select only ctonract creation trxs. Omitting this parameter will cause including all types of trxs in selection.
         - name: contractAddress
           in: query
@@ -330,62 +330,27 @@ components:
     Block:
       type: object
       properties:
-        uncles:
-          type: array
-          items: 
-            type: string
-          description: Array of uncle hashes
-        difficulty: 
-          type: string
-          description: Integer of the difficulty for this block.
-        extraData:
-          type: string
-          description: The “extra data” field of this block.
-        gasLimit:
-          type: integer
-          description: The maximum gas allowed in this block.
         gasUsed:
           type: integer
           description: The total used gas by all transactions in this block.
         hash:
           type: string
           description: Hash of the block.
-        logsBloom:
-          type: string
-          description: The bloom filter for the logs of the block.
-        miner:
-          type: string
-          description: The address of the beneficiary to whom the mining rewards were given.
-        nonce:
-          type: string
-          description: Hash of the generated proof-of-work.
         number:
           type: integer
           description: The block number.
         parentHash:
           type: string
           description: Hash of the parent block.
-        sha3Uncles:
-          type: string
-          description: SHA3 of the uncles data in the block.
-        size:
-          type: integer
-          description: Integer the size of this block in bytes.
         stateRoot:
           type: string
           description: The root of the final state trie of the block.
         timestamp:
           type: integer
           description: The unix timestamp for when the block was collated.
-        totalDifficulty:
-          type: string
-          description: Integer of the total difficulty of the chain until this block.
         transactions:
           type: integer
           description: number of transactions in block
-        transactionsRoot:
-          type: string
-          description: The root of the transaction trie of the block
     Transaction:
       type: object
       properties:
@@ -421,10 +386,6 @@ components:
           type: integer
         cumulativeGasUsed:
           type: integer
-        logs:
-          type: array
-          items: 
-            type: object
         fee:
           type: integer
         status:

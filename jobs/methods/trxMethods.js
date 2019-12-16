@@ -31,7 +31,6 @@ const normalize = (txData, receipt, blockData) => {
         transactionIndex: txData.transactionIndex,
         timestamp: blockData.timestamp,
         cumulativeGasUsed: receipt.cumulativeGasUsed,
-        logs: receipt.logs,
         fee: String(receipt.gasUsed * txData.gasPrice),
         globalIndex: txData.globalIndex
     };

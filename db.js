@@ -7,22 +7,11 @@ const Block = new Schema(
     'number': { type: Number, index: { unique: true } },
     'hash': String,
     'parentHash': String,
-    'nonce': String,
-    'sha3Uncles': String,
-    'logsBloom': String,
-    'transactionsRoot': String,
     'stateRoot': String,
     'receiptRoot': String,
-    'miner': { type: String, lowercase: true },
-    'difficulty': String,
-    'totalDifficulty': String,
-    'size': Number,
-    'extraData': String,
-    'gasLimit': Number,
     'gasUsed': Number,
     'timestamp': Number,
     'blockTime': Number,
-    'uncles': [String],
     'transactions': Number
   }, { collection: 'Block' },
 );
@@ -75,7 +64,6 @@ const Transaction = new Schema(
     'input': String,
     'cumulativeGasUsed': Number,
     'contractAddress': String,
-    'logs': [],
     'fee': String,
     'globalIndex': Number
   }, { collection: 'Transaction' },
@@ -103,9 +91,7 @@ const BlockStat = new Schema(
     'txCount': Number,
     'gasUsed': Number,
     'gasLimit': Number,
-    'miner': String,
     'blockTime': Number,
-    'uncleCount': Number,
   }, { collection: 'BlockStat' },
 );
 
@@ -127,8 +113,7 @@ Transaction.index({ creates: 1, blockNumber: -1 });
 Account.index({ balance: -1 });
 Account.index({ balance: -1, blockNumber: -1 });
 Account.index({ type: -1, balance: -1 });
-Block.index({ miner: 1 });
-Block.index({ miner: 1, blockNumber: -1 });
+Block.index({ blockNumber: -1 });
 Block.index({ hash: 1, number: -1 });
 Market.index({ timestamp: -1 });
 TokenTransfer.index({ blockNumber: -1 });
