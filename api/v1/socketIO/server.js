@@ -78,6 +78,40 @@ function deleteNsp(nspName){ // nsp for namespace
     delete ioServer.nsps[nspString];
 }
 
+let prevBlock; // previous block number
+async function getNewBlockAndEmit() {
+    try {
+        const newBlock = await Block.findOne().select('-_id').sort({ number: -1 }).limit(1);
+
+        if (!newBlock) {
+            return;
+        }
+
+        if (prevBlock == newBlock.number) {
+            return;
+        }
+
+        const lastTrxs = await Transaction.find({ blockNumber: newBlock.number })
+                                          .select('-_id hash from to value transactionIndex')
+                                          .sort(`-transactionIndex`)
+                                          .limit(10);
+
+        console.log(`New block: ${newBlock.number}`);
+
+        prevBlock = newBlock.number;
+        
+        const nsp = ioServer.nsps[`/new/blocks`];
+
+        if (nsp && nsp.adapter.rooms[`subscribedClients`]){
+            const payload = JSON.stringify({ event: `newBlock`, block: newBlock, lastTrxs });
+            nsp.to(`subscribedClients`).emit(`message`, payload);
+            console.log(`Sent to ${nsp.adapter.rooms[`subscribedClients`].length} clients`);
+        }
+    } catch (err) {
+    console.log(err);
+    }
+}
+
 ////////////////////////////////
 // Namespaces inititalization //
 ////////////////////////////////
@@ -92,41 +126,16 @@ namespacesUrls.forEach(nspUrl => addNsp(nspUrl));
 // Jobs //
 //////////
 
-let prevBlock; // previous block number
-setInterval(
-    async () => {
-        try {
-            const newBlock = await Block.findOne().select('-_id').sort({ number: -1 }).limit(1);
+async function newBlocksEmitter() {
+    await getNewBlockAndEmit();
+    setTimeout(
+        async () => {
+            newBlocksEmitter();
+        }, 
+        250
+    );
+}
 
-            if (!newBlock) {
-                return;
-            }
-
-            if (prevBlock && prevBlock == newBlock.number) {
-                return;
-            }
-
-            const lastTrxs = await Transaction.find({ blockNumber: newBlock.number })
-                                              .select('-_id hash from to value transactionIndex')
-                                              .sort(`-transactionIndex`)
-                                              .limit(10);
-
-            console.log(`New block: ${newBlock.number}`);
-
-            prevBlock = newBlock.number;
-            
-            const nsp = ioServer.nsps[`/new/blocks`];
-
-            if (nsp && nsp.adapter.rooms[`subscribedClients`]){
-                const payload = JSON.stringify({ event: `newBlock`, block: newBlock, lastTrxs });
-                nsp.to(`subscribedClients`).emit(`message`, payload);
-                console.log(`Sent to ${nsp.adapter.rooms[`subscribedClients`].length} clients`);
-            }
-        } catch (err) {
-        console.log(err);
-        }
-    },
-    250
-);
+newBlocksEmitter();
 
 module.exports = ioServer;
