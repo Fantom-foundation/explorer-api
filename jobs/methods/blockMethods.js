@@ -26,22 +26,22 @@ const writeToDB = async(config, blockData, flush) => {
         self.bulkOps = [];
         if (bulk.length === 0) return;
 
-        await Block.collection.insertMany(bulk, (err, blocks) => {
-            if (typeof err !== 'undefined' && err) {
+        try {
+            const blocks = await Block.insertMany(bulk);
+            if (duplicate) console.log(`Duplicate inserted!`);
+            if (!config.has('quiet') || config.get('quiet') == false) {
+                console.log(`* ${blocks.length} blocks successfully written.`);
+            }
+        } catch (err) {
                 if (err.code === 11000) {
-                    if (!('quiet' in config && config.quiet === true)) {
+                if (!config.has('quiet') || config.get('quiet') == false) {
                         console.log(`Skip: Duplicate DB key : ${err}`);
                     }
                 } else {
                     console.log(`Error: Aborted due to error on DB: ${err}`);
                     process.exit(9);
                 }
-            } else {
-                if (!('quiet' in config && config.quiet === true)) {
-                    console.log(`* ${blocks.insertedCount} blocks successfully written.`);
-                }
             }
-        });
     }
 };
 
@@ -101,7 +101,7 @@ const getLatest = async() => {
             return blockData;
         }
 
-        writeToDB(config, blockData, true);
+        await writeToDB(config, blockData, true);
         trxMethods.writeManyToDB(config, blockData, true);
     } catch (err) {
         console.log(err);

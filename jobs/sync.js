@@ -43,7 +43,14 @@ if (config.settings.useFiat) {
  * Get latest blocks with interval
  */
 const getLatestBlocksInterval = config.get(`getLatestBlocksInterval`);
-setInterval(
-    blockMethods.getLatest,
-    getLatestBlocksInterval
-);
+async function continiousSync() {
+    await blockMethods.getLatest();
+    setTimeout(
+        async () => {
+            continiousSync();
+        }, 
+        getLatestBlocksInterval
+    );
+}
+
+continiousSync();

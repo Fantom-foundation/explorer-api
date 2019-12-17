@@ -12,7 +12,7 @@ module.exports.get = (req, res, next) => [
     .isInt({ min: 0 }).bail().withMessage('positive')
     .isInt({ max: 100000000 }).bail().withMessage('tooLargeNumber')
     .toInt()
-    .custom((number, { req }) => Block.findOne({ number }, '-_id').lean(true).then(block => {
+    .custom((number, { req }) => Block.findOne({ number }, '-_id -__v').lean(true).then(block => {
       if (!block) {
         return Promise.reject();
       }

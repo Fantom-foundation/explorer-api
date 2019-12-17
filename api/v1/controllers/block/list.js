@@ -15,7 +15,7 @@ module.exports = async (req, res, next) => {
     await Promise.all([
       Block.findOne().select('number').sort('-number'),
       Block.countDocuments(),
-      Block.find().select('-_id').sort({ number: order }).skip(offset).limit(count)
+      Block.find().select('-_id -__v').sort({ number: order }).skip(offset).limit(count)
     ])
     .then(result => {
       lastBlock = result[0];
