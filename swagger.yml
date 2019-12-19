@@ -4,7 +4,7 @@ info:
   description: Work in progress
   version: '0.1'
 servers:
-  - url: 'http://18.222.120.223:3100'
+  - url: 'http://3.136.216.35:3100'
 paths:
   /api/v1/get-blocks:
     get:
@@ -54,12 +54,12 @@ paths:
                         items:
                           $ref: '#/components/schemas/Block'
       servers:
-        - url: 'http://18.222.120.223:3100'
+        - url: 'http://3.136.216.35:3100'
       tags:
         - block
       summary: Blocks list
     servers:
-      - url: 'http://18.222.120.223:3100'
+      - url: 'http://3.136.216.35:3100'
   /api/v1/get-transaction:
     get:
       description: Get transaction by hash
@@ -86,15 +86,15 @@ paths:
                       transaction:
                         $ref: '#/components/schemas/Transaction'
       servers:
-        - url: 'http://18.222.120.223:3100'
+        - url: 'http://3.136.216.35:3100'
       tags:
         - transaction
       summary: Get transaction by hash
     servers:
-      - url: 'http://18.222.120.223:3100'
+      - url: 'http://3.136.216.35:3100'
   /api/v1/get-block:
     servers:
-      - url: 'http://18.222.120.223:3100'
+      - url: 'http://3.136.216.35:3100'
     get:
       summary: Get block by block number
       tags:
@@ -123,7 +123,7 @@ paths:
                       block:
                         $ref: '#/components/schemas/Block'
       servers:
-        - url: 'http://18.222.120.223:3100'
+        - url: 'http://3.136.216.35:3100'
   /api/v1/get-account:
     get:
       description: Returns account with transactions array in it with pagination.  You may filter transactions by query field 'trxsFilter' with values 'from' or 'to'. Without values filter not applied to result.
@@ -138,7 +138,7 @@ paths:
           in: query
           schema:
             type: integer
-          example: 10
+          example: 0
           description: default 0
         - name: count
           in: query
@@ -185,12 +185,12 @@ paths:
                             items:
                               $ref: '#/components/schemas/TransactionForAccountEndpoint'
       servers:
-        - url: 'http://18.222.120.223:3100'
+        - url: 'http://3.136.216.35:3100'
       summary: Get account by address
       tags:
         - account
     servers:
-      - url: 'http://18.222.120.223:3100'
+      - url: 'http://3.136.216.35:3100'
   /api/v1/get-transactions:
     get:
       description: Returns transactions list with pagination. Max count = 30, order may be -1 or 1.
@@ -268,12 +268,12 @@ paths:
                         items:
                           $ref: '#/components/schemas/Transaction'
       servers:
-        - url: 'http://18.222.120.223:3100'
+        - url: 'http://3.136.216.35:3100'
       summary: Transactions list
       tags:
         - transaction
     servers:
-      - url: 'http://18.222.120.223:3100'
+      - url: 'http://3.136.216.35:3100'
   /api/v1/get-latest-data:
     get:
       description: Returns latest blocks and transactions with pagination. Max count = 30.
@@ -310,12 +310,401 @@ paths:
                         items:
                           $ref: '#/components/schemas/Transaction'
       servers:
-        - url: 'http://18.222.120.223:3100'
+        - url: 'http://3.136.216.35:3100'
       summary: Get latest data
       tags:
         - latest data
     servers:
-      - url: 'http://18.222.120.223:3100'
+      - url: 'http://3.136.216.35:3100'
+  
+  /api/v1/epoch/latest:
+    get:
+      description: Returns info about latest ended epoch.
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json; charset=utf-8:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/meta'
+                  data:
+                    type: object
+                    properties:
+                      epochNumber:
+                        type: integer
+                      totalTxFee:
+                        type: integer
+                      validatingPower:
+                        type: integer
+                      endTime:
+                        type: string
+                        format: date-time
+                      duration:
+                        type: integer
+                        description: duration in milliseconds
+      servers:
+        - url: 'http://3.136.216.35:3100'
+      summary: Latest ended epoch
+      tags:
+        - epoch
+    servers:
+      - url: 'http://3.136.216.35:3100'
+      
+  /api/v1/delegator/address/{address}:
+    get:
+      description: Returns delegator by its address
+      parameters:
+        - name: address
+          in: path
+          schema:
+            type: string
+          example: '0x71981d82370e8cffd831003fa961b172e4c129d2'
+          required: true
+        - name: verbosity
+          in: query
+          schema:
+            type: number
+          example: 2
+          description: If 1, then include base fields. If 2, then include metrics.
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json; charset=utf-8:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/meta'
+                  data:
+                    $ref: '#/components/schemas/DelegatorObject'
+      servers:
+        - url: 'http://3.136.216.35:3100'
+      summary: Delegator by address
+      tags:
+        - delegator
+    servers:
+      - url: 'http://3.136.216.35:3100'
+      
+  /api/v1/delegator/staker/{id}:
+    get:
+      description: Returns all the delegators which delegated to the specified staker.
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: number
+          example: 1
+          required: true
+        - name: verbosity
+          in: query
+          schema:
+            type: number
+          example: 2
+          description: If 0, then include only addresses. If 1, then include base fields. If 2, then include metrics.
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json; charset=utf-8:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/meta'
+                  data:
+                    type: object
+                    properties:
+                      delegators:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/DelegatorObject'
+      servers:
+        - url: 'http://3.136.216.35:3100'
+      summary: Delegators by staker id
+      tags:
+        - delegator
+    servers:
+      - url: 'http://3.136.216.35:3100'
+
+  /api/v1/staker/id/{id}/downtime:
+    get:
+      description: Period of time in nanoseconds for which validator didn’t participate in blocks.
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: number
+          example: 1
+          required: true
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json; charset=utf-8:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/meta'
+                  data:
+                    type: object
+                    properties:
+                      downtime:
+                        type: string
+                      missedBlocks:
+                        type: string
+      servers:
+        - url: 'http://3.136.216.35:3100'
+      summary: Staker's downtime
+      tags:
+        - staker
+    servers:
+      - url: 'http://3.136.216.35:3100'
+      
+  /api/v1/staker/id/{id}/origination-score:
+    get:
+      description: Returns staker's origination score
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: number
+          example: 1
+          required: true
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json; charset=utf-8:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/meta'
+                  data:
+                    type: object
+                    properties:
+                      originationScore:
+                        type: string
+      servers:
+        - url: 'http://3.136.216.35:3100'
+      summary: Staker's origination score
+      tags:
+        - staker
+    servers:
+      - url: 'http://3.136.216.35:3100'
+      
+  /api/v1/staker/id/{id}/poi:
+    get:
+      description: Returns staker's proof of importance
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: number
+          example: 1
+          required: true
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json; charset=utf-8:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/meta'
+                  data:
+                    type: object
+                    properties:
+                      poi:
+                        type: string
+      servers:
+        - url: 'http://3.136.216.35:3100'
+      summary: Staker's PoI
+      tags:
+        - staker
+    servers:
+      - url: 'http://3.136.216.35:3100'
+  
+  /api/v1/staker/id/{id}/validating-power:
+    get:
+      description: Returns staker's validating power
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: number
+          example: 1
+          required: true
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json; charset=utf-8:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/meta'
+                  data:
+                    type: object
+                    properties:
+                      validatingPower:
+                        type: string
+      servers:
+        - url: 'http://3.136.216.35:3100'
+      summary: Staker's validating power
+      tags:
+        - staker
+    servers:
+      - url: 'http://3.136.216.35:3100'
+      
+  /api/v1/staker/id/{id}/validation-score:
+    get:
+      description: Returns staker's validating score
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: number
+          example: 1
+          required: true
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json; charset=utf-8:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/meta'
+                  data:
+                    type: object
+                    properties:
+                      validationScore:
+                        type: string
+      servers:
+        - url: 'http://3.136.216.35:3100'
+      summary: Staker's validating score
+      tags:
+        - staker
+    servers:
+      - url: 'http://3.136.216.35:3100'
+      
+  /api/v1/staker/id/{id}:
+    get:
+      description: Returns staker by its id
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: number
+          example: 1
+          required: true
+        - name: verbosity
+          in: query
+          schema:
+            type: number
+          example: 2
+          description: If 1, then include base fields. If 2, then include metrics.
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json; charset=utf-8:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/meta'
+                  data:
+                    $ref: '#/components/schemas/StakerObject'
+      servers:
+        - url: 'http://3.136.216.35:3100'
+      summary: Staker by id
+      tags:
+        - staker
+    servers:
+      - url: 'http://3.136.216.35:3100'
+      
+      
+  /api/v1/staker/address/{address}:
+    get:
+      description: Returns staker by its address
+      parameters:
+        - name: address
+          in: path
+          schema:
+            type: string
+          example: '0xf88d5892faf084dcf4143566d9c9b3f047c153ca'
+          required: true
+        - name: verbosity
+          in: query
+          schema:
+            type: number
+          example: 2
+          description: If 0, then include only stakerID. If 1, then include base field. If 2, then include metrics.
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json; charset=utf-8:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/meta'
+                  data:
+                    $ref: '#/components/schemas/StakerObject'
+      servers:
+        - url: 'http://3.136.216.35:3100'
+      summary: Staker by address
+      tags:
+        - staker
+    servers:
+      - url: 'http://3.136.216.35:3100'
+      
+  /api/v1/staker/:
+    get:
+      description: Returns list of stakers.
+      parameters:
+        - name: verbosity
+          in: query
+          schema:
+            type: number
+          example: 2
+          description: If 0, then include only stakerIDs. If 1, then include base field. If 2, then include metrics (including downtime if validator).
+
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json; charset=utf-8:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/meta'
+                  data:
+                    type: object
+                    properties:
+                      stakers:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/StakerObject'
+      servers:
+        - url: 'http://3.136.216.35:3100'
+      summary: Stakers list
+      tags:
+        - staker
+    servers:
+      - url: 'http://3.136.216.35:3100'
       
 components:
   schemas:
@@ -446,4 +835,64 @@ components:
         param:
           type: string
         location:
+          type: string
+    DelegatorObject:
+      type: object
+      properties:
+        address:
+          type: string
+        amount:
+          type: string
+        claimedRewards:
+          type: string
+        createdEpoch:
+          type: string
+        createdTime:
+          type: string
+        deactivatedEpoch:
+          type: string
+        deactivatedTime:
+          type: string
+        toStakerID:
+          type: string
+    StakerObject:
+      type: object
+      properties:
+        address:
+          type: string
+        claimedRewards:
+          type: string
+        createdEpoch:
+          type: string
+        createdTime:
+          type: string
+        deactivatedEpoch:
+          type: string
+        deactivatedTime:
+          type: string
+        delegatedMe:
+          type: string
+        delegatorsClaimedRewards:
+          type: string
+        downtime:
+          type: string
+        id:
+          type: string
+        isCheater:
+          type: boolean
+        isValidator:
+          type: boolean
+        missedBlocks:
+          type: string
+        originationScore:
+          type: string
+        poi:
+          type: string
+        stake:
+          type: string
+        totalStake:
+          type: string
+        validatingPower:
+          type: string
+        validationScore:
           type: string
