@@ -47,7 +47,6 @@ const syncChain = function(config, nextBlock) {
         }
 
         setTimeout(() => {
-            console.log(`syncChain, next block: ${nextBlock}`);
             syncChain(config, nextBlock);
         }, 500);
     } catch (err) {

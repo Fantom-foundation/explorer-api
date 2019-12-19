@@ -97,12 +97,12 @@ module.exports.getDowntime = (req, res, next) => [
 
       const params = [idHex];
       const reqId = 1; // required by fantom node rpc-api, intended for request accounting (this ability not using now)
-      const staker = await fantomRPC({ method, params, id: reqId });
+      const downtime = await fantomRPC({ method, params, id: reqId });
 
-      if (staker.result === null) return Promise.reject();
-      if (staker.error) return Promise.reject(staker.error.message);
+      if (downtime.result === null) return Promise.reject();
+      if (downtime.error) return Promise.reject(downtime.error.message);
 
-      req.foundStaker = staker.result;
+      req.foundDowntime = downtime.result;
       return true;
     })
     .withMessage('notFound'),

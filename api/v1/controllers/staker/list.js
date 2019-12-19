@@ -26,7 +26,7 @@ module.exports = async (req, res, next) => {
       hexFieldsToDecimals(obj);
     })
 
-    return res.json(okResp(list.result));
+    return res.json(okResp({ stakers: list.result }));
   }
   catch (err){
     console.log(err);
