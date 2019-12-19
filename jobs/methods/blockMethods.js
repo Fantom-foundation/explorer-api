@@ -20,7 +20,7 @@ const writeToDB = async(config, blockData, flush) => {
             console.log(`\t- block #${blockData.number} inserted.`);
         }
     }
-
+    
     if (flush && self.bulkOps.length > 0 || self.bulkOps.length >= config.bulkSize) {
         const bulk = self.bulkOps;
         self.bulkOps = [];
@@ -28,20 +28,19 @@ const writeToDB = async(config, blockData, flush) => {
 
         try {
             const blocks = await Block.insertMany(bulk);
-            if (duplicate) console.log(`Duplicate inserted!`);
             if (!config.has('quiet') || config.get('quiet') == false) {
                 console.log(`* ${blocks.length} blocks successfully written.`);
             }
         } catch (err) {
-                if (err.code === 11000) {
+            if (err.code === 11000) {                
                 if (!config.has('quiet') || config.get('quiet') == false) {
-                        console.log(`Skip: Duplicate DB key : ${err}`);
-                    }
-                } else {
-                    console.log(`Error: Aborted due to error on DB: ${err}`);
-                    process.exit(9);
+                    console.log(`Skip: Duplicate DB key : ${err}`);
                 }
+            } else {
+                console.log(`Error: Aborted due to error on DB: ${err}`);
+                process.exit(9);
             }
+        }
     }
 };
 
@@ -83,7 +82,6 @@ const getLatest = async() => {
             })
 
             console.log(`new block: ${blockNumber}, last block in DB: ${lastBlockInDB.number}`);
-            console.log(`missing blocks: ${missingBlocks}`);
         }
         ///////////////////////////////////////////////////////////////////////////
 
