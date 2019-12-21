@@ -236,13 +236,13 @@ const writeManyToDB = async(config, blockData, flush) => {
         const accounts = Object.keys(data);
 
         if (bulk.length === 0 && accounts.length === 0) return;
-
+        
         // update balances
         if (config.settings.useRichList && accounts.length > 0) {
             asyncL.eachSeries(accounts, (account, eachCallback) => {
                 const { blockNumber } = data[account];
                 // get contract account type
-                web3.eth.getCode(account, (err, code) => {
+                web3.eth.getCode(account, async (err, code) => {
                     if (err) {
                         console.log(`ERROR: fail to getCode(${account})`);
                         return eachCallback(err);
@@ -251,16 +251,15 @@ const writeManyToDB = async(config, blockData, flush) => {
                         data[account].type = 1; // contract type
                     }
 
-                    web3.eth.getBalance(account, blockNumber, (err, balance) => {
-                        if (err) {
-                            console.log(err);
-                            console.log(`ERROR: fail to getBalance(${account})`);
-                            return eachCallback(err);
-                        }
-
+                    try {
+                        const balance = await web3.eth.getBalance(account);
                         data[account].balance = parseFloat(web3.utils.fromWei(balance, 'ether'));
                         eachCallback();
-                    });
+                    } catch (err) {
+                        console.log(err);
+                        console.log(`ERROR: fail to getBalance(${account})`);
+                        return eachCallback(err);
+                    }                    
                 });
             }, (err) => {
                 let n = 0;
