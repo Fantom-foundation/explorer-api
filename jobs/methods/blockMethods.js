@@ -81,7 +81,7 @@ const getLatest = async() => {
                 fetchCertainBlockAndWriteToDB(blockNumber);
             })
 
-            console.log(`new block: ${blockNumber}, last block in DB: ${lastBlockInDB.number}`);
+            console.log(`new block: ${blockNumber}, last block in DB: ${lastBlockInDB.number}, diff: ${blockNumber-lastBlockInDB.number}`);
         }
         ///////////////////////////////////////////////////////////////////////////
 
