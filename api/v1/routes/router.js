@@ -36,6 +36,8 @@ const getEpochLatest = require('../controllers/epoch/latest.js');
 
 // misc
 const getLatestData = require('../controllers/get-latest-data.js');
+
+// dev
 const rpc = require('../controllers/rpc.js');
 
 ////////////////
@@ -85,6 +87,10 @@ router.get('/epoch/latest', getEpochLatest);
 
 // misc
 router.get('/get-latest-data', validLatestData.get(), getLatestData);
+
+// dev
+if (process.env.NODE_ENV == `development`){
 router.post('/rpc', validRPC.post(), rpc);
+}
 
 module.exports = router;
