@@ -63,6 +63,7 @@ module.exports.list = (req, res, next) => [
     .optional()
     .isString().bail().withMessage('shouldBeString')
     .isLength({ min: 42, max: 42 }).bail().withMessage(`stringLength42`)
+    .customSanitizer(address => address.toLowerCase())
     .custom((address, { req }) => Account.findOne({ address }, '-_id address').lean(true).then(account => {
       if (!account) {
         return Promise.reject();
@@ -76,6 +77,7 @@ module.exports.list = (req, res, next) => [
     .optional()
     .isString().bail().withMessage('shouldBeString')
     .isLength({ min: 42, max: 42 }).bail().withMessage(`stringLength42`)
+    .customSanitizer(address => address.toLowerCase())
     .custom((address, { req }) => Account.findOne({ address }, '-_id address').lean(true).then(account => {
       if (!account) {
         return Promise.reject();
@@ -94,6 +96,7 @@ module.exports.list = (req, res, next) => [
     .optional()
     .isString().bail().withMessage('shouldBeString')
     .isLength({ min: 42, max: 42 }).bail().withMessage(`stringLength42`)
+    .customSanitizer(address => address.toLowerCase())
     .custom((address, { req }) => Contract.findOne({ address }, '-_id address').lean(true).then(contract => {
       if (!contract) {
         return Promise.reject();

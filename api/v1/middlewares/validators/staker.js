@@ -12,6 +12,7 @@ module.exports.getByAddress = (req, res, next) => [
     .exists().bail().withMessage(`required`)
     .isString().bail().withMessage('shouldBeString')
     .isLength({ min: 42, max: 42 }).bail().withMessage(`stringLength42`)
+    .customSanitizer(address => address.toLowerCase())
     .custom(async (address, { req }) => {
       const method = `sfc_getStakerByAddress`;   
 

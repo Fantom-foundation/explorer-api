@@ -16,6 +16,7 @@ module.exports.get = (req, res, next) => [
     .exists().bail().withMessage(`required`)
     .isString().bail().withMessage('shouldBeString')
     .isLength({ min: 42, max: 42 }).bail().withMessage(`stringLength42`)
+    .customSanitizer(address => address.toLowerCase())
     .custom((address, { req }) => Account.findOne({ address }, '-_id balance address').lean(true).then(account => {
       if (!account) {
         return Promise.reject();

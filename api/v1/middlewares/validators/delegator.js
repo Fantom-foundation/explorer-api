@@ -11,6 +11,7 @@ module.exports.get = (req, res, next) => [
     .exists().bail().withMessage(`required`)
     .isString().bail().withMessage('shouldBeString')
     .isLength({ min: 42, max: 42 }).bail().withMessage(`stringLength42`)
+    .customSanitizer(address => address.toLowerCase())
     .custom(async (address, { req }) => {
       const method = `sfc_getDelegator`;   
 
@@ -50,10 +51,14 @@ module.exports.getListByStaker = (req, res, next) => [
     .isString().bail().withMessage('shouldBeString')
     .isLength({ min: 1, max: 42 }).bail().withMessage(`unnacceptableLength`)
     .custom(async (staker, { req }) => {
-      let method = `sfc_getStakerByAddress`;   
+      let method; 
+      
       if (!staker.startsWith(`0x`)) {
         staker = `0x` + staker;
         method = `sfc_getStaker`;
+      } else {
+        staker = staker.toLowerCase();  
+        method = `sfc_getStakerByAddress`;
       }
 
       const params = [staker, `0x1`];
