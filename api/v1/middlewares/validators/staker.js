@@ -170,7 +170,7 @@ module.exports.getPoi = (req, res, next) => [
       const poi = await fantomRPC({ method, params, id: reqId });
 
       if (poi.result === null) return Promise.reject();
-      if (poi.error) return Promise.reject(staker.error.message);
+      if (poi.error) return Promise.reject(poi.error.message);
 
       req.foundPoi = parseInt(poi.result, 16);
       return true;
@@ -205,7 +205,7 @@ module.exports.getValidatingPower = (req, res, next) => [
       const validPower = await fantomRPC({ method, params, id: reqId });
 
       if (validPower.result === null) return Promise.reject();
-      if (validPower.error) return Promise.reject(staker.error.message);
+      if (validPower.error) return Promise.reject(validPower.error.message);
 
       req.foundValidPower = utils.hexToNumberString(validPower.result);
       return true;
@@ -240,7 +240,7 @@ module.exports.getValidationScore = (req, res, next) => [
       const validScore = await fantomRPC({ method, params, id: reqId });
 
       if (validScore.result === null) return Promise.reject();
-      if (validScore.error) return Promise.reject(staker.error.message);
+      if (validScore.error) return Promise.reject(validScore.error.message);
 
       req.foundValidScore = parseInt(validScore.result, 16);
       return true;
