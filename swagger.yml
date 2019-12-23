@@ -343,6 +343,10 @@ paths:
                       duration:
                         type: integer
                         description: duration in milliseconds
+                      totalBaseRewardWeight:
+                        type: string
+                      totalTxRewardWeight:
+                        type: string
       servers:
         - url: 'http://3.136.216.35:3100'
       summary: Latest ended epoch
@@ -671,6 +675,41 @@ paths:
     servers:
       - url: 'http://3.136.216.35:3100'
       
+  /api/v1/staker/id/{id}/reward-weights:
+    get:
+      description: Returns staker's baseRewardWeight and txRewardWeight.
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: number
+          example: 1
+          required: true
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json; charset=utf-8:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/meta'
+                  data:
+                    type: object
+                    properties:
+                      baseRewardWeight:
+                        type: string
+                      txRewardWeight:
+                        type: string
+      servers:
+        - url: 'http://3.136.216.35:3100'
+      summary: Staker's reward weights
+      tags:
+        - staker
+    servers:
+      - url: 'http://3.136.216.35:3100'
+      
 components:
   schemas:
     meta:
@@ -820,6 +859,8 @@ components:
           type: string
         toStakerID:
           type: string
+        claimedReward:
+          type: string
     StakerObject:
       type: object
       properties:
@@ -859,3 +900,13 @@ components:
           type: string
         validationScore:
           type: string
+        isActive:
+          type: boolean
+        isOffline:
+          type: boolean
+        baseRewardWeight:
+          type: string
+        txRewardWeight:
+          type: string
+        
+        
