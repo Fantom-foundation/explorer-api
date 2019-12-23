@@ -18,11 +18,15 @@ module.exports = async (req, res, next) => {
     
     const epochNumber = utils.hexToNumberString(epochStats.result.epoch);
     const totalTxFee = utils.hexToNumberString(epochStats.result.totalFee);
+    const totalBaseRewardWeight = utils.hexToNumberString(epochStats.result.totalBaseRewardWeight);
+    const totalTxRewardWeight = utils.hexToNumberString(epochStats.result.totalTxRewardWeight);
     let duration;  
 
     const result = {
       epochNumber,
-      totalTxFee
+      totalTxFee,
+      totalBaseRewardWeight,
+      totalTxRewardWeight
     };
     
     if (epochStats.result.end){

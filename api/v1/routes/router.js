@@ -28,6 +28,7 @@ const getStakerDowntime = require('../controllers/staker/getDowntime.js');
 const getStakerOriginationScore = require('../controllers/staker/getOriginationScore.js');
 const getStakerPoi = require('../controllers/staker/getPoi.js');
 const getStakerValidationScore = require('../controllers/staker/getValidationScore.js');
+const getStakerRewardWeights = require('../controllers/staker/getRewardWeights');
 const getStakerList = require('../controllers/staker/list.js');
 
 // epoch
@@ -78,6 +79,7 @@ router.get('/staker/id/:id/downtime', validStaker.getDowntime(), getStakerDownti
 router.get('/staker/id/:id/origination-score', validStaker.getOriginationScore(), getStakerOriginationScore);
 router.get('/staker/id/:id/poi', validStaker.getPoi(), getStakerPoi);
 router.get('/staker/id/:id/validation-score', validStaker.getValidationScore(), getStakerValidationScore);
+router.get('/staker/id/:id/reward-weights', validStaker.getRewardWeights(), getStakerRewardWeights);
 router.get('/staker/', validStaker.list(), getStakerList);
 
 // epoch

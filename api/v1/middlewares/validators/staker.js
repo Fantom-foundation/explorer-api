@@ -240,3 +240,38 @@ module.exports.list = (req, res, next) => [
     }
   },
 ];
+
+module.exports.getRewardWeights = (req, res, next) => [
+  param('id')
+    .exists().bail().withMessage(`required`)
+    .isInt().bail().withMessage('shouldBeNumber')
+    .isInt({ min: 0 }).bail().withMessage('positive')
+    .isInt({ max: 100000000 }).bail().withMessage('tooLargeNumber')
+    .toInt()
+    .custom(async (id, { req }) => {
+      const method = `sfc_getRewardWeights`;         
+      const idHex = `0x` + id.toString(16);
+
+      const params = [idHex];
+      const reqId = 1; // required by fantom node rpc-api, intended for request accounting (this ability not using now)
+      const rewardWeights = await fantomRPC({ method, params, id: reqId });
+
+      if (rewardWeights.result === null) return Promise.reject();
+      if (rewardWeights.error) return Promise.reject(rewardWeights.error.message);
+      
+      req.foundRewardWeights = rewardWeights.result;
+      return true;
+    })
+    .withMessage('notFound'),
+  //
+
+  async (req, res, next) => {
+    const err = validationResult(req);
+    if (!err.isEmpty()) {
+      const errorsInProperLanguage = brI18n(req, err.array());
+      next(errors.badRequest(errorsInProperLanguage));
+    } else {
+      next();
+    }
+  },
+];
