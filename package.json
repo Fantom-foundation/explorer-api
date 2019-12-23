@@ -14,7 +14,7 @@
     "io-dev": "nodemon ./bin/socketIOServer.js",
     "io-client-dev": "nodemon ./bin/socketIOClient.js",
 
-    "test": "mocha"
+    "test-api": "TEST_ENV=true mocha test/api/*.js --timeout 10000"
   },
   "dependencies": {
     "async": "^3.1.0",

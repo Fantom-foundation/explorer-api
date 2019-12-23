@@ -1,4 +1,4 @@
-const app = require("../bin/api");
+const app = require("../../bin/api");
 const chai = require("chai");
 const chaiHttp = require("chai-http");
 
