@@ -334,11 +334,9 @@ paths:
                     type: object
                     properties:
                       epochNumber:
-                        type: integer
+                        type: string
                       totalTxFee:
-                        type: integer
-                      validatingPower:
-                        type: integer
+                        type: string
                       endTime:
                         type: string
                         format: date-time
@@ -530,40 +528,7 @@ paths:
         - staker
     servers:
       - url: 'http://3.136.216.35:3100'
-  
-  /api/v1/staker/id/{id}/validating-power:
-    get:
-      description: Returns staker's validating power
-      parameters:
-        - name: id
-          in: path
-          schema:
-            type: number
-          example: 1
-          required: true
-      responses:
-        '200':
-          description: ok
-          content:
-            application/json; charset=utf-8:
-              schema:
-                type: object
-                properties:
-                  meta:
-                    $ref: '#/components/schemas/meta'
-                  data:
-                    type: object
-                    properties:
-                      validatingPower:
-                        type: string
-      servers:
-        - url: 'http://3.136.216.35:3100'
-      summary: Staker's validating power
-      tags:
-        - staker
-    servers:
-      - url: 'http://3.136.216.35:3100'
-      
+
   /api/v1/staker/id/{id}/validation-score:
     get:
       description: Returns staker's validating score
@@ -891,8 +856,6 @@ components:
         stake:
           type: string
         totalStake:
-          type: string
-        validatingPower:
           type: string
         validationScore:
           type: string

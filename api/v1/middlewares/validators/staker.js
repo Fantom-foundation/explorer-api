@@ -190,41 +190,6 @@ module.exports.getPoi = (req, res, next) => [
   },
 ];
 
-module.exports.getValidatingPower = (req, res, next) => [
-  param('id')
-    .exists().bail().withMessage(`required`)
-    .isInt().bail().withMessage('shouldBeNumber')
-    .isInt({ min: 0 }).bail().withMessage('positive')
-    .isInt({ max: 100000000 }).bail().withMessage('tooLargeNumber')
-    .toInt()
-    .custom(async (id, { req }) => {
-      const method = `sfc_getValidatingPower`;         
-      const idHex = `0x` + id.toString(16);
-
-      const params = [idHex];
-      const reqId = 1; // required by fantom node rpc-api, intended for request accounting (this ability not using now)
-      const validPower = await fantomRPC({ method, params, id: reqId });
-
-      if (validPower.result === null) return Promise.reject();
-      if (validPower.error) return Promise.reject(validPower.error.message);
-
-      req.foundValidPower = utils.hexToNumberString(validPower.result);
-      return true;
-    })
-    .withMessage('notFound'),
-  //
-
-  async (req, res, next) => {
-    const err = validationResult(req);
-    if (!err.isEmpty()) {
-      const errorsInProperLanguage = brI18n(req, err.array());
-      next(errors.badRequest(errorsInProperLanguage));
-    } else {
-      next();
-    }
-  },
-];
-
 module.exports.getValidationScore = (req, res, next) => [
   param('id')
     .exists().bail().withMessage(`required`)

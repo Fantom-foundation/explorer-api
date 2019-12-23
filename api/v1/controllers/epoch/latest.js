@@ -1,52 +1,28 @@
 const errors = require('../../../../mixins/errors');
 const okResp = require('../../../../mixins/okResponseConstructor');
 const fantomRPC = require('../../../../mixins/fantomRPC');
+const utils = require('web3-utils');
 
 module.exports = async (req, res, next) => {
   try {          
-    const getEpochStatsPromise = fantomRPC({ 
+    const epochStats = await fantomRPC({ 
       method: `eth_getEpochStats`, 
       params: ['latest'], 
       id: 1 //required by fantom node rpc-api, intended for request accounting (this ability not using now)
     });
 
-    const getStakersPromise = fantomRPC({ 
-      method: `sfc_getStakers`, 
-      params:["0x2"],
-      id: 1
-    });
-
-    let epochStats, stakers;
-
-    await Promise.all([
-      getEpochStatsPromise,
-      getStakersPromise
-    ])
-    .then(result => {
-      epochStats = result[0];
-      stakers = result[1];
-    });
-
-    if (epochStats.error || stakers.error) {
-      const errors = [];
-      if (epochStats.error) errors.push(epochStats.error);
-      if (stakers.error) errors.push(stakers.error);
-      throw new Error({ errors });
+    if (epochStats.error) {
+      console.log(epochStats.error);
+      throw new Error(epochStats.error.message);
     }    
     
-    const epochNumber = parseInt(epochStats.result.epoch, 16);
-    const totalTxFee = parseInt(epochStats.result.totalFee, 16);
-    let validatingPower = 0;  
+    const epochNumber = utils.hexToNumberString(epochStats.result.epoch);
+    const totalTxFee = utils.hexToNumberString(epochStats.result.totalFee);
     let duration;  
-
-    stakers.result.forEach(staker => {
-      validatingPower += parseInt(staker.validatingPower, 16);
-    })
 
     const result = {
       epochNumber,
-      totalTxFee,
-      validatingPower
+      totalTxFee
     };
     
     if (epochStats.result.end){

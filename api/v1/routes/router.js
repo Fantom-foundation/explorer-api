@@ -27,7 +27,6 @@ const getStakerById = require('../controllers/staker/getById.js');
 const getStakerDowntime = require('../controllers/staker/getDowntime.js');
 const getStakerOriginationScore = require('../controllers/staker/getOriginationScore.js');
 const getStakerPoi = require('../controllers/staker/getPoi.js');
-const getStakerValidatingPower = require('../controllers/staker/getValidatingPower.js');
 const getStakerValidationScore = require('../controllers/staker/getValidationScore.js');
 const getStakerList = require('../controllers/staker/list.js');
 
@@ -78,7 +77,6 @@ router.get('/staker/id/:id', validStaker.getById(), getStakerById);
 router.get('/staker/id/:id/downtime', validStaker.getDowntime(), getStakerDowntime);
 router.get('/staker/id/:id/origination-score', validStaker.getOriginationScore(), getStakerOriginationScore);
 router.get('/staker/id/:id/poi', validStaker.getPoi(), getStakerPoi);
-router.get('/staker/id/:id/validating-power', validStaker.getValidatingPower(), getStakerValidatingPower);
 router.get('/staker/id/:id/validation-score', validStaker.getValidationScore(), getStakerValidationScore);
 router.get('/staker/', validStaker.list(), getStakerList);
 
