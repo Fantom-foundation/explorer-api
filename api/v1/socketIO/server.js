@@ -92,9 +92,8 @@ async function getNewBlockAndEmit() {
         }
 
         const lastTrxs = await Transaction.find({ blockNumber: newBlock.number })
-                                          .select('-_id hash from to value transactionIndex')
-                                          .sort(`-transactionIndex`)
-                                          .limit(10);
+                                          .select('-_id hash from to value transactionIndex blocknumber timestamp fee')
+                                          .sort(`-transactionIndex`);
 
         console.log(`New block: ${newBlock.number}`);
 
