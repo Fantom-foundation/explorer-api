@@ -43,14 +43,21 @@ if (config.settings.useFiat) {
  * Get latest blocks with interval
  */
 const getLatestBlocksInterval = config.get(`getLatestBlocksInterval`);
-async function continiousSync() {
+async function continiousFetchingLastBlocks() {
     await blockMethods.getLatest();
     setTimeout(
         async () => {
-            continiousSync();
+            continiousFetchingLastBlocks();
         }, 
         getLatestBlocksInterval
     );
 }
 
-continiousSync();
+
+try {
+    blockMethods.listenLatest();
+} catch (err) {
+    console.log(`New blocks subscription error`);
+    console.log(`Starting forced fetching last blocks`);
+    continiousFetchingLastBlocks();    
+}

@@ -44,9 +44,8 @@ const writeToDB = async(config, blockData, flush) => {
     }
 };
 
-const getLatest = async() => {
+async function processBlockNumber(blockNumber) {
     try {
-        const blockNumber = await web3.eth.getBlockNumber();
         const missingBlocks = [];
         let tempBlockNumStorage;
 
@@ -123,8 +122,39 @@ const fetchCertainBlockAndWriteToDB = async(blockNumber) => {
     trxMethods.writeManyToDB(config, blockData, true);
 }
 
+const getLatest = async() => {
+    try {
+        const blockNumber = await web3.eth.getBlockNumber();
+        processBlockNumber(blockNumber);
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+const listenLatest = () => {
+    let newBlocks;
+    
+    try {
+        newBlocks = web3.eth.subscribe('newBlockHeaders');
+    } catch (err) {
+        console.log(err);
+        throw new Error(err);
+    }
+
+    newBlocks.on('data', (blockHeader) => {
+        const blockNumber = blockHeader.number;      
+        console.log(`New block:`, blockNumber);  
+        processBlockNumber(blockNumber);
+    });
+    
+    newBlocks.on('error', console.error);
+};
+
+
+
 module.exports = {
     writeToDB,
     getLatest,
+    listenLatest,
     fetchCertainBlockAndWriteToDB
 }
