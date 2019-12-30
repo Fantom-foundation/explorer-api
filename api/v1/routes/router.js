@@ -70,7 +70,7 @@ router.get('/get-accounts', validAccount.list(), getAccounts);
 
 // delegator
 router.get('/delegator/address/:address', validDelegator.get(), getDelegator);
-router.get('/delegator/staker/:staker', validDelegator.getListByStaker(), getDelegatorsByStaker); // :staker is id or address
+router.get('/delegator/staker/:id', validDelegator.getListByStaker(), getDelegatorsByStaker);
 
 // staker
 router.get('/staker/address/:address', validStaker.getByAddress(), getStakerByAddress);

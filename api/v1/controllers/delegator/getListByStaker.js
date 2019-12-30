@@ -6,7 +6,7 @@ const hexFieldsToDecimals = require('../../../../mixins/nodeRawRpcHexFieldsToDec
 module.exports = async (req, res, next) => {
   try {          
     const method = `sfc_getDelegatorsOf`;  
-    const staker = req.processedStaker;
+    const staker = req.stakerIdHex;
 
     const verbosity = req.query.verbosity ? req.query.verbosity : 0;
     const verbosityHex = `0x` + verbosity.toString(16);

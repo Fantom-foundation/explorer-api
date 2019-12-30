@@ -46,29 +46,24 @@ module.exports.getListByStaker = (req, res, next) => [
   query('verbosity')
     .optional()
     .isInt({ min: 0, max: 2}).withMessage(`invalidValue`),
-  param('staker')
+  param('id')
     .exists().bail().withMessage(`required`)
-    .isString().bail().withMessage('shouldBeString')
-    .isLength({ min: 1, max: 42 }).bail().withMessage(`unnacceptableLength`)
-    .custom(async (staker, { req }) => {
-      let method; 
-      
-      if (!staker.startsWith(`0x`)) {
-        staker = `0x` + staker;
-        method = `sfc_getStaker`;
-      } else {
-        staker = staker.toLowerCase();  
-        method = `sfc_getStakerByAddress`;
-      }
+    .isInt().bail().withMessage('shouldBeNumber')
+    .isInt({ min: 0 }).bail().withMessage('positive')
+    .isInt({ max: 100000000 }).bail().withMessage('tooLargeNumber')
+    .toInt()
+    .custom(async (id, { req }) => {
+      const method = `sfc_getStaker`;
+      const hexId = `0x` + id.toString(16);
 
-      const params = [staker, `0x1`];
+      const params = [hexId, `0x1`];
       const reqId = 1; // required by fantom node rpc-api, intended for request accounting (this ability not using now)
       const foundStaker = await fantomRPC({ method, params, id: reqId });
 
       if (foundStaker.result === null) return Promise.reject();
       if (foundStaker.error) return Promise.reject(foundStaker.error.message);
 
-      req.processedStaker = staker;
+      req.stakerIdHex = hexId;
       
       return true;
     })
