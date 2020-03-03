@@ -1,6 +1,7 @@
 const IO = require("socket.io");
-const wsErrors = require("../../../mixins/websocketErrors");
-const { Block, Transaction } = require('../../../db.js');
+
+const web3 = require('../../../mixins/web3');
+const wsErrors = require('../../../mixins/websocketErrors');
 
 const port = process.env.SOCKETIOSERVER_PORT || 4600;
 const ioServer = IO.listen(port);
@@ -78,37 +79,61 @@ function deleteNsp(nspName){ // nsp for namespace
     delete ioServer.nsps[nspString];
 }
 
-let prevBlock; // previous block number
-async function getNewBlockAndEmit() {
-    try {
-        const newBlock = await Block.findOne().select('-_id').sort({ number: -1 }).limit(1);
+async function listenLatestBlocks() {
+    const newBlocks = web3.eth.subscribe('newBlockHeaders');
 
-        if (!newBlock) {
-            return;
-        }
+    newBlocks.on('data', async (blockHeader) => {
+        const blockNumber = blockHeader.number;      
+        console.log(`New block:`, blockNumber);  
+        processBlock(blockNumber);
+    });
+    
+    newBlocks.on('error', console.error);
+};
 
-        if (prevBlock == newBlock.number) {
-            return;
-        }
-
-        const lastTrxs = await Transaction.find({ blockNumber: newBlock.number })
-                                          .select('-_id hash from to value transactionIndex blocknumber timestamp fee')
-                                          .sort(`-transactionIndex`);
-
-        console.log(`New block: ${newBlock.number}`);
-
-        prevBlock = newBlock.number;
-        
+async function processBlock(blockNumber) {
+    try {  
         const nsp = ioServer.nsps[`/new/blocks`];
-
-        if (nsp && nsp.adapter.rooms[`subscribedClients`]){
-            const payload = JSON.stringify({ event: `newBlock`, block: newBlock, lastTrxs });
-            nsp.to(`subscribedClients`).emit(`message`, payload);
-            console.log(`Sent to ${nsp.adapter.rooms[`subscribedClients`].length} clients`);
+        if (!nsp || !nsp.adapter.rooms[`subscribedClients`] || !nsp.adapter.rooms[`subscribedClients`].length){
+            return;
         }
+
+        const blockData = await web3.eth.getBlock(blockNumber, true);     
+        const lastTrxs = [];
+        const newBlock = {
+            gasUsed: blockData.gasUsed,
+            hash: blockData.hash,
+            number: blockData.number,
+            parentHash: blockData.parentHash,
+            stateRoot: blockData.stateRoot,
+            timestamp: blockData.timestamp,
+            transactions: blockData.transactions.length,        
+        };
+
+        for (const trx of blockData.transactions) {
+            const receipt = await web3.eth.getTransactionReceipt(trx.hash);
+            lastTrxs.push({
+                hash: trx.hash,
+                from: trx.from,
+                to: trx.to,
+                value: trx.value,
+                transactionIndex: trx.transactionIndex,
+                blocknumber: trx.blocknumber,
+                timestamp: blockData.timestamp,
+                fee: String(receipt.gasUsed * trx.gasPrice),
+            });
+        }
+
+        sendToSubscribers(nsp, newBlock, lastTrxs);
     } catch (err) {
-    console.log(err);
+        console.log(err);
     }
+}
+
+function sendToSubscribers(nsp, newBlock, lastTrxs){
+    const payload = JSON.stringify({ event: `newBlock`, block: newBlock, lastTrxs });
+    nsp.to(`subscribedClients`).emit(`message`, payload);
+    console.log(`Sent to ${nsp.adapter.rooms[`subscribedClients`].length} clients`);
 }
 
 ////////////////////////////////
@@ -121,20 +146,10 @@ const namespacesUrls = [
 
 namespacesUrls.forEach(nspUrl => addNsp(nspUrl));
 
-//////////
-// Jobs //
-//////////
+///////////////////////////////
+// Listen Fantom node socket //
+///////////////////////////////
 
-async function newBlocksEmitter() {
-    await getNewBlockAndEmit();
-    setTimeout(
-        async () => {
-            newBlocksEmitter();
-        }, 
-        250
-    );
-}
-
-newBlocksEmitter();
+listenLatestBlocks();
 
 module.exports = ioServer;
