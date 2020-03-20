@@ -2,6 +2,7 @@ const errors = require('../../../../mixins/errors');
 const okResp = require('../../../../mixins/okResponseConstructor');
 const fantomRPC = require('../../../../mixins/fantomRPC');
 const hexFieldsToDecimals = require('../../../../mixins/nodeRawRpcHexFieldsToDecimals');
+const contractsMethods = require('../../../../mixins/contractsMethods');
 
 module.exports = async (req, res, next) => {
   try {          
@@ -22,9 +23,16 @@ module.exports = async (req, res, next) => {
       throw new Error(list.error.message);
     }  
 
+    const metadataPromises = [];
+
     list.result.forEach(obj=> {
       hexFieldsToDecimals(obj);
-    })
+      metadataPromises.push(contractsMethods.getStakerMetadata(obj.id));
+    });
+
+    await Promise.all(metadataPromises).then(metadataArr => {
+      list.result.forEach((obj, i) => obj.metadata = metadataArr[i]);
+    });
 
     return res.json(okResp({ stakers: list.result }));
   }

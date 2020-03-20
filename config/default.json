@@ -20,5 +20,8 @@
     },
     "validation": {
         "maxCount": 30
+    },
+    "contractsAddresses": {
+        "sfc": "0xfc00face00000000000000000000000000000000"
     }
 }
