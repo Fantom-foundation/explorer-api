@@ -2,7 +2,6 @@
     "nodeAddr":     "0.0.0.0",
     "wsPort":       7771,
     "rpcPort":      18545,
-    "apiPort":      18545,
     "startBlock":   0,
     "endBlock":     "latest",
     "quiet":        false,

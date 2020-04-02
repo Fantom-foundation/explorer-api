@@ -6,11 +6,12 @@ const {calcValidatorRewards, getEpochSnapshot, getCurrentEpoch, stakers} = requi
 const zeroInt = new BN(0);
 
 const ErrEpochNumIsTooBig = "current epoch is less than number of epochs requested for calculation";
-const ErrMissingRequestParameters = (req) => `Missing request parameters: id: ${req.id}, epochs: ${req.epochsNum}`
+const ErrMissingRequestParameters = (req) => `Missing request parameters: id: ${req.id}, epochs: ${req.epochsNum}`;
 
 module.exports = async (req, res, next) => {
-  if (!req.id || !req.epochsNum)
-    throw ErrMissingRequestParameters(req)
+  if (!req.params.id || !req.params.epochsNum) {
+      throw ErrMissingRequestParameters(req);
+  }
 
   const second = 1;
   const minute = second * 60;
@@ -19,12 +20,12 @@ module.exports = async (req, res, next) => {
   const year = day * 365;
 
   // we have to ensure that epochsNum is represented as string
-  let epochNumber = req.epochsNum.toString();
+  let epochNumber = req.params.epochsNum.toString();
   let epochNum = new BN(epochNumber);
-  let stkrId = req.id.toString();
+  let stkrId = req.params.id.toString();
   let currentEpochRes = await getCurrentEpoch();
   let currentEpoch = new BN(currentEpochRes);
-  if (currentEpoch.sub(epochNum).cmp(zeroInt) == -1) {
+  if (currentEpoch.sub(epochNum).cmp(zeroInt) === -1) {
       throw ErrEpochNumIsTooBig;
   }
 
@@ -35,7 +36,7 @@ module.exports = async (req, res, next) => {
   for (let i=0; i < epochNumInt; i++) {
       let targetEpoch = currentEpoch.sub(new BN(i+1));
       let snapshot = await getEpochSnapshot(targetEpoch);
-      totalDuration = totalDuration.add(new BN(snapshot.duration))
+      totalDuration = totalDuration.add(new BN(snapshot.duration));
   }
 
   let staker = await stakers(stkrId);

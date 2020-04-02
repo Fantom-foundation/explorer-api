@@ -199,9 +199,9 @@ module.exports.getRoi = (req, res, next) => [
     .isInt().bail().withMessage('shouldBeNumber')
     .isInt({ min: 0 }).bail().withMessage('positive')
     .toInt()
-    .custom(async (id, { req }) => {
-      req.id = id;
-    })
+    // .custom(async (id, { req }) => {
+    //   req.id = id;
+    // })
     .withMessage('notFound'),
   param('epochsNum')
     .exists().bail().withMessage(`required`)
@@ -209,13 +209,12 @@ module.exports.getRoi = (req, res, next) => [
     .isInt({ min: 0 }).bail().withMessage('positive')
     .isInt({ max: maxRoiEpochs }).bail().withMessage('positive')
     .toInt()
-    .custom(async (epochsNum, { req }) => {
-      req.epochsNum = epochsNum;
-    })
+    // .custom(async (epochsNum, { req }) => {
+    //   req.epochsNum = epochsNum;
+    // })
     .withMessage('notFound'),
   
   async (req, res, next) => {
-    console.log("enter async handler")
     const err = validationResult(req);
     if (!err.isEmpty()) {
       const errorsInProperLanguage = brI18n(req, err.array());

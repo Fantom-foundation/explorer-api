@@ -1,11 +1,19 @@
 const config = require('config');
-const Web3 = require('web3');
 const web3 = require('./web3');
-const BN = Web3.utils.BN;
 
 const sfcAbi = require('./abi').stakers;
 const contractsAddresses = config.get('contractsAddresses');
 const sfc = new web3.eth.Contract(sfcAbi, contractsAddresses.sfc);
+
+function queryCallback(errorMsg) {
+    return function (error, result) {
+        if (!error) {
+            return result;
+        } else {
+            console.log(errorMsg, error);
+        }
+    }
+}
 
 module.exports = {
     getStakerMetadata: async (stkrId) => {
@@ -45,14 +53,4 @@ module.exports = {
         let staker = await sfc.methods.stakers(stkrId).call({}, queryCallback("stakers error:"));
         return staker;
     },
-}
-
-function queryCallback(errorMsg) {
-    return function (error, result) {
-        if (!error) {
-            return result;
-        } else {
-            console.log(errorMsg, error);
-        }
-    }
 }
