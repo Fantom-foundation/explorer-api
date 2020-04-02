@@ -190,6 +190,41 @@ module.exports.getPoi = (req, res, next) => [
   },
 ];
 
+// should be passed to a config?
+const maxRoiEpochs = 10000;
+
+module.exports.getRoi = (req, res, next) => [
+  param('id')
+    .exists().bail().withMessage(`required`)
+    .isInt().bail().withMessage('shouldBeNumber')
+    .isInt({ min: 0 }).bail().withMessage('positive')
+    .toInt()
+    // .custom(async (id, { req }) => {
+    //   req.id = id;
+    // })
+    .withMessage('notFound'),
+  param('epochsNum')
+    .exists().bail().withMessage(`required`)
+    .isInt().bail().withMessage('shouldBeNumber')
+    .isInt({ min: 0 }).bail().withMessage('positive')
+    .isInt({ max: maxRoiEpochs }).bail().withMessage('positive')
+    .toInt()
+    // .custom(async (epochsNum, { req }) => {
+    //   req.epochsNum = epochsNum;
+    // })
+    .withMessage('notFound'),
+  
+  async (req, res, next) => {
+    const err = validationResult(req);
+    if (!err.isEmpty()) {
+      const errorsInProperLanguage = brI18n(req, err.array());
+      next(errors.badRequest(errorsInProperLanguage));
+      return;
+    }
+    next();
+  },
+];
+
 module.exports.getValidationScore = (req, res, next) => [
   param('id')
     .exists().bail().withMessage(`required`)

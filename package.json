@@ -7,13 +7,11 @@
     "sync": "node ./bin/sync.js",
     "stats": "node ./bin/stats.js",
     "io": "node ./bin/socketIOServer.js",
-
     "api-dev": "nodemon ./bin/api",
     "sync-dev": "nodemon ./bin/sync.js",
     "stats-dev": "nodemon ./bin/stats.js",
     "io-dev": "nodemon ./bin/socketIOServer.js",
     "io-client-dev": "nodemon ./bin/socketIOClient.js",
-
     "test-api": "TEST_ENV=true mocha test/api/*.js --timeout 10000"
   },
   "dependencies": {
@@ -30,7 +28,7 @@
     "node-fetch": "^2.6.0",
     "request-promise": "^4.2.5",
     "socket.io": "^2.3.0",
-    "web3": "^1.2.3",
+    "web3": "^1.2.6",
     "web3-explorer": "^1.0.4"
   },
   "devDependencies": {

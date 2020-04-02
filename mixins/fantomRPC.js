@@ -2,7 +2,7 @@ const rp = require('request-promise');
 const config = require('config');
 
 function reqOpts({ method, params, id }){
-    const uri = `http://${config.nodeAddr}:${config.apiPort}`;
+    const uri = `http://${config.nodeAddr}:${config.rpcPort}`;
     const options = {
         method: 'POST',
         uri,
