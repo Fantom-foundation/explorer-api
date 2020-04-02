@@ -2,7 +2,7 @@ const errors = require('../../../../mixins/errors');
 const okResp = require('../../../../mixins/okResponseConstructor');
 const Web3 = require('web3');
 const BN = Web3.utils.BN;
-const {calcValidatorRewards, getEpochSnapshot, getCurrentEpoch, stakers} = require('../../../../mixins/contractsMethods')
+const {calcValidatorRewards, getEpochSnapshot, getCurrentEpoch, stakers} = require('../../../../mixins/contractsMethods');
 const zeroInt = new BN(0);
 
 const errEpochNumIsTooBig = "current epoch is less than number of epochs requested for calculation";
