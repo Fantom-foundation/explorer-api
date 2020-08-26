@@ -36,7 +36,7 @@
   "devDependencies": {
     "chai": "^4.2.0",
     "chai-http": "^4.3.0",
-    "mocha": "^6.2.2",
+    "mocha": "^8.1.2",
     "nodemon": "^2.0.0",
     "socket.io-client": "^2.3.0"
   },
