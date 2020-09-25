@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "async": "^3.1.0",
-    "config": "^3.2.4",
+    "config": "^3.3.2",
     "cookie-parser": "^1.4.4",
     "dotenv": "^8.2.0",
     "express-validator": "^6.2.0",
