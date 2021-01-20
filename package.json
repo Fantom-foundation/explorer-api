@@ -29,7 +29,7 @@
     "morgan": "^1.9.1",
     "node-fetch": "^2.6.0",
     "request-promise": "^4.2.5",
-    "socket.io": "^2.3.0",
+    "socket.io": "^2.4.0",
     "web3": "^1.2.3",
     "web3-explorer": "^1.0.4"
   },
